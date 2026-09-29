@@ -1,0 +1,12 @@
+node_modules/
+data.db
+uploads/*
+.env
+.env.local
+.env.*.local
+# Abaikan database SQLite temporary & file log
+*.db-shm
+*.db-wal
+*.db
+node_modules/
+.env

