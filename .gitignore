@@ -1,12 +1,15 @@
+# Dependencies
 node_modules/
-data.db
-uploads/*
+
+# Environment variables
 .env
 .env.local
 .env.*.local
-# Abaikan database SQLite temporary & file log
+
+# Uploads
+uploads/
+
+# SQLite database
+*.db
 *.db-shm
 *.db-wal
-*.db
-node_modules/
-.env
